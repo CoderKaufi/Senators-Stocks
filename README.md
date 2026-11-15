@@ -4,7 +4,7 @@ Posílá do aplikace **ntfy** česky, jaké akcie nakupují a prodávají ameri�
 a kongresmani. Data pocházejí z povinných hlášení podle zákona **STOCK Act**, která
 zpracovává [Financial Modeling Prep](https://site.financialmodelingprep.com/).
 
-Kontrola probíhá každé 3 hodiny. Upozornění přijde jen tehdy, když jsou zveřejněny nové obchody.
+Kontrola probíhá každé 3 hodiny. Když nikdo nic nového nenakoupil, přijde krátká zpráva „Žádné nové nákupy“.
 
 ## Nastavení
 

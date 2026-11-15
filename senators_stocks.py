@@ -236,15 +236,18 @@ def run_once(dry_run=False):
     if not new:
         print("Žádné nové obchody.")
         if env_flag("NOTIFY_EMPTY") and not dry_run:
-            ntfy_send(server, topic, "Obchody Kongresu",
-                      "Za poslední 3 hodiny nebyly zveřejněny žádné nové obchody.",
+            ntfy_send(server, topic, "🏛️ Žádné nové nákupy",
+                      "Za poslední 3 hodiny nikdo z Kongresu nic nového nenakoupil ani neprodal.",
                       tags=["zzz"])
     else:
         blocks = [format_trade(ch, t) for _, ch, t, _ in new]
         chunks = chunk_messages(blocks)
         buys = sum(1 for _, _, t, _ in new if (t.get("type") or "").lower() == "purchase")
         for i, body in enumerate(chunks, 1):
-            title = f"🏛️ {len(new)} nových obchodů Kongresu (nákupy: {buys})"
+            if buys:
+                title = f"🏛️ {len(new)} nových obchodů Kongresu (nákupy: {buys})"
+            else:
+                title = f"🏛️ Žádné nové nákupy · nové prodeje/směny: {len(new)}"
             if len(chunks) > 1:
                 title += f" [{i}/{len(chunks)}]"
             print(f"--- {title}\n{body}\n")

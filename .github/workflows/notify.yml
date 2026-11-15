@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: notify
@@ -23,6 +24,7 @@ jobs:
       - name: Zkontrolovat nové obchody a poslat do ntfy
         env:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          NOTIFY_EMPTY: "1"
           NTFY_TOPIC: ${{ vars.NTFY_TOPIC || 'senat-akcie-yckQ8xLDyxkG006JwR5wJI90' }}
         run: python senators_stocks.py
       - name: Uložit seznam odeslaných obchodů
@@ -32,3 +34,7 @@ jobs:
           git add seen.json
           git diff --cached --quiet || git commit -m "Aktualizace odeslaných obchodů"
           git push
+      - name: Udržet plán aktivní (GitHub jinak vypne plán po 60 dnech)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/notify.yml/enable"
