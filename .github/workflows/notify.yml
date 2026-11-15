@@ -1,0 +1,34 @@
+name: Obchody Kongresu → ntfy
+
+on:
+  schedule:
+    - cron: "17 */3 * * *"   # každé 3 hodiny (UTC)
+  workflow_dispatch:          # ruční spuštění z karty Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: notify
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Zkontrolovat nové obchody a poslat do ntfy
+        env:
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          NTFY_TOPIC: ${{ vars.NTFY_TOPIC || 'senat-akcie-yckQ8xLDyxkG006JwR5wJI90' }}
+        run: python senators_stocks.py
+      - name: Uložit seznam odeslaných obchodů
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add seen.json
+          git diff --cached --quiet || git commit -m "Aktualizace odeslaných obchodů"
+          git push
